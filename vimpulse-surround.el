@@ -44,7 +44,8 @@
     ("[" . ("[ " . " ]"))
     ("}" . ("{" . "}"))
     ("{" . ("{ " . " }"))
-    ("#" . ("#{" . "}")))
+    ("#" . ("#{" . "}"))
+    ("t" . 'vimpulse-surround-read-tag))
   "Alist of surround items.
 Each item is of the form (TRIGGER . (LEFT . RIGHT)), all strings.
 This only affects inserting pairs, not deleting or changing them."
@@ -53,9 +54,11 @@ This only affects inserting pairs, not deleting or changing them."
                        (symbol :tag "Surround pair"))))
 
 (defun vimpulse-surround-char-to-pair (char)
-  (let ((pairs (assoc-default char vimpulse-surround-pairs)))
-    (or pairs
-        (cons char char))))
+  (let ((pairs (or (vimpulse-unquote (assoc-default char vimpulse-surround-pairs))
+                   (cons char char))))
+    (if (symbolp pairs)
+        (funcall pairs)
+      pairs)))
 
 (defvar *vimpulse-surrounding* nil
   "Internal variable set by `vimpulse-surround-define-text-object'.
@@ -64,14 +67,19 @@ It triggers `vimpulse-change'. Nothing to see here, move along.")
 (defvar *vimpulse-surround-start-size* nil)
 (defvar *vimpulse-surround-end-size* nil)
 
+(defun vimpulse-surround-read-tag ()
+  (let* ((input (read-from-minibuffer "<"))
+         (_ (string-match "\\([a-z-]+\\)\\(.*?\\)[>]*$" input))
+         (tag  (match-string 1 input))
+         (rest (match-string 2 input)))
+    (cons (format "<%s%s>" tag rest) (format "</%s>" tag))))
+
 (defun vimpulse-surround-region (start end)
   "Surround selection with input."
   (interactive "r")
   (let (pair)
-    (viper-special-read-and-insert-char)
     (setq pair (vimpulse-surround-char-to-pair
-                (format "%c" (viper-char-at-pos 'backward))))
-    (delete-char -1)
+                (format "%c" (viper-read-char-exclusive))))
     (goto-char end)
     (insert (cdr pair))
     (goto-char start)
