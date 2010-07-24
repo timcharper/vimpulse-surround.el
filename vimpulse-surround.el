@@ -1,4 +1,4 @@
-;;; vimpulse-surround.el --- emulates surround.vim, for vimpulse
+;;; vimpulse-surround.el --- emulate surround.vim in Vimpulse
 
 ;; Copyright (C) 2010 Tim Harper
 ;;
@@ -38,16 +38,16 @@
   :group 'vimpulse)
 
 (defcustom vimpulse-surround-pairs
-  '((")" ("(" . ")"))
-    ("(" ("( " . " )"))
-    ("]" ("[" . "]"))
-    ("[" ("[ " . " ]"))
-    ("}" ("{" . "}"))
-    ("{" ("{ " . " }"))
-    ("#" ("#{" . "}")))
+  '((")" . ("(" . ")"))
+    ("(" . ("( " . " )"))
+    ("]" . ("[" . "]"))
+    ("[" . ("[ " . " ]"))
+    ("}" . ("{" . "}"))
+    ("{" . ("{ " . " }"))
+    ("#" . ("#{" . "}")))
   "Alist of surround items.
-Each item is of the form (TRIGGER (LEFT . RIGHT)), all strings.
-Does not apply to delete surround, change surround."
+Each item is of the form (TRIGGER . (LEFT . RIGHT)), all strings.
+This only affects inserting pairs, not deleting or changing them."
   :group 'vimpulse-surround
   :type '(repeat (cons (regexp :tag "Key")
                        (symbol :tag "Surround pair"))))
@@ -118,10 +118,10 @@ It triggers `vimpulse-change'. Nothing to see here, move along.")
     output))
 
 (defun vimpulse-surround-zap-whitespace (direction boundary)
-  (let ((looking-at-space? (if (= direction 1)
-                            (lambda () (looking-at "[ \t]"))
-                          (lambda () (looking-back "[ \t]")))))
-    (while (and (funcall looking-at-space?) (not (= (point) boundary)))
+  (let ((pred (if (= direction 1)
+		  'looking-at
+		'looking-back)))
+    (while (and (funcall pred "[ \t]") (not (= (point) boundary)))
       (delete-char direction)
       (when (= direction 1) (setq boundary (1- boundary))))))
 
@@ -166,8 +166,7 @@ Prompt for a range. If the range returned is detected to be a surround
 range, dispatch to `vimpulse-surround-change'.
 Otherwise, dispatch to `vimpulse-change'."
   (interactive)
-
-    (let (*vimpulse-surrounding*)
+  (let (*vimpulse-surrounding*)
     (when (not beg) (let ((range (vimpulse-range)))
                       (setq beg (car range)
                             end (cadr range))))
