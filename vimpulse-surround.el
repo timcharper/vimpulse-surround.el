@@ -45,7 +45,8 @@
     ("}" . ("{" . "}"))
     ("{" . ("{ " . " }"))
     ("#" . ("#{" . "}"))
-    ("t" . 'vimpulse-surround-read-tag))
+    ("t" . 'vimpulse-surround-read-tag)
+    ("<" . 'vimpulse-surround-read-tag))
   "Alist of surround items.
 Each item is of the form (TRIGGER . (LEFT . RIGHT)), all strings.
 This only affects inserting pairs, not deleting or changing them."
@@ -67,8 +68,13 @@ It triggers `vimpulse-change'. Nothing to see here, move along.")
 (defvar *vimpulse-surround-start-size* nil)
 (defvar *vimpulse-surround-end-size* nil)
 
+(defvar vimpulse-surround-read-tag-keymap
+  (let ((map (copy-keymap minibuffer-local-map)))
+    (define-key map ">" 'exit-minibuffer)
+    map))
+
 (defun vimpulse-surround-read-tag ()
-  (let* ((input (read-from-minibuffer "<"))
+  (let* ((input (read-from-minibuffer "<" "" vimpulse-surround-read-tag-keymap))
          (_ (string-match "\\([a-z-]+\\)\\(.*?\\)[>]*$" input))
          (tag  (match-string 1 input))
          (rest (match-string 2 input)))
