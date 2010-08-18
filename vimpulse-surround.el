@@ -5,7 +5,7 @@
 ;; Author: Tim Harper <timcharper at gmail dat com>
 ;;      Please send bug reports to the mailing list (see below).
 ;; Created: July 23 2010
-;; Time-stamp: "2010-08-18 22:32:49 CEST stepnem"
+;; Time-stamp: "2010-08-18 22:41:28 CEST stepnem"
 ;; Version: 0.1+git
 ;; Keywords: emulations, vimpulse
 ;; Human-Keywords: vim, visual-mode, surround.vim
@@ -21,12 +21,16 @@
 
 ;; `vimpulse-surround' emulates surround.vim, a popular Vim plugin.
 ;;
-;; Requires a recent Vimpulse version. More information on Vimpulse and how to
-;; get it can be found here:
+;; The functionality is wrapped into a global minor mode, enabled by default.
+;;
+;; (require 'vimpulse-surround) is all you need to get going.
+;;
+;; The code requires a recent Vimpulse version. More information on Vimpulse
+;; and how to get it can be found here:
 
 ;; http://www.assembla.com/spaces/vimpulse
 
-;; Tested with GNU Emacs 23.2
+;; Tested with GNU Emacs 23.2 and 24 (development version)
 
 ;;; Code:
 
@@ -188,11 +192,6 @@ Otherwise, dispatch to `vimpulse-change'."
         (vimpulse-surround-change beg end (eq *vimpulse-surrounding* 'strip))
       (vimpulse-change beg end dont-save))))
 
-(define-key viper-vi-basic-map "d" 'vimpulse-delete-surround-or-delete)
-(define-key viper-vi-basic-map "c" 'vimpulse-change-surround-or-change)
-
-(define-key vimpulse-visual-basic-map "s" 'vimpulse-surround-region)
-
 (vimpulse-surround-define-text-object vimpulse-surround-paren (arg)
   "Select surrounding parentheses."
   :keys '("b" ")")
@@ -226,6 +225,15 @@ Otherwise, dispatch to `vimpulse-change'."
   "Select a double-quoted expression."
   :keys '("\"")
   (vimpulse-quote-range arg ?\" t))
+
+(define-minor-mode vimpulse-surround-mode
+  "Emulate the surround.vim Vim plugin in Vimpulse."
+  t nil :global t)
+
+(vimpulse-define-key 'vimpulse-surround-mode 'vi-state "d" 'vimpulse-delete-surround-or-delete)
+(vimpulse-define-key 'vimpulse-surround-mode 'vi-state "c" 'vimpulse-change-surround-or-change)
+
+(vimpulse-define-key 'vimpulse-surround-mode 'visual-state "s" 'vimpulse-surround-region)
 
 (provide 'vimpulse-surround)
 ;;; vimpulse-surround.el ends here
