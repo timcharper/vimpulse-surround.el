@@ -2,12 +2,12 @@
 
 ;; Copyright (C) 2010 Tim Harper
 ;;
-;; Author: Tim Harper
-;; Maintainer: Tim Harper <timcharper at gmail dat com>
+;; Author: Tim Harper <timcharper at gmail dat com>
 ;;      Please send bug reports to the mailing list (see below).
 ;; Created: July 23 2010
+;; Time-stamp: "2010-08-18 22:32:49 CEST stepnem"
 ;; Version: 0.1+git
-;; Keywords: emulations, viper
+;; Keywords: emulations, vimpulse
 ;; Human-Keywords: vim, visual-mode, surround.vim
 ;; Mailing list: <implementations-list at lists.ourproject.org>
 ;;      Subscribe: http://tinyurl.com/implementations-list
@@ -33,7 +33,7 @@
 (require 'vimpulse)
 
 (defgroup vimpulse-surround nil
-  "surround.vim in Emacs"
+  "surround.vim for Emacs"
   :prefix "vimpulse-surround-"
   :group 'vimpulse)
 
