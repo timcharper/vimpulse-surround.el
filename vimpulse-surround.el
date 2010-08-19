@@ -49,21 +49,22 @@
     ("}" . ("{" . "}"))
     ("{" . ("{ " . " }"))
     ("#" . ("#{" . "}"))
-    ("t" . 'vimpulse-surround-read-tag)
-    ("<" . 'vimpulse-surround-read-tag))
+    ("t" . vimpulse-surround-read-tag)
+    ("<" . vimpulse-surround-read-tag))
   "Alist of surround items.
 Each item is of the form (TRIGGER . (LEFT . RIGHT)), all strings.
+Alternatively, a function can be put in place of (LEFT . RIGHT).
 This only affects inserting pairs, not deleting or changing them."
   :group 'vimpulse-surround
   :type '(repeat (cons (regexp :tag "Key")
                        (symbol :tag "Surround pair"))))
 
 (defun vimpulse-surround-char-to-pair (char)
-  (let ((pairs (or (vimpulse-unquote (assoc-default char vimpulse-surround-pairs))
-                   (cons char char))))
-    (if (symbolp pairs)
-        (funcall pairs)
-      pairs)))
+  (let ((pair (or (assoc-default char vimpulse-surround-pairs)
+                  (cons char char))))
+    (if (functionp pair)
+        (funcall pair)
+      pair)))
 
 (defvar *vimpulse-surrounding* nil
   "Internal variable set by `vimpulse-surround-define-text-object'.
@@ -87,9 +88,8 @@ It triggers `vimpulse-change'. Nothing to see here, move along.")
 (defun vimpulse-surround-region (start end)
   "Surround selection with input."
   (interactive "r")
-  (let (pair)
-    (setq pair (vimpulse-surround-char-to-pair
-                (format "%c" (viper-read-char-exclusive))))
+  (let ((pair (vimpulse-surround-char-to-pair
+               (format "%c" (viper-read-char-exclusive)))))
     (goto-char end)
     (insert (cdr pair))
     (goto-char start)
@@ -100,11 +100,9 @@ It triggers `vimpulse-change'. Nothing to see here, move along.")
   (mapcar (lambda (key) (concat "s" key)) keys))
 
 (defmacro vimpulse-surround-define-text-object (object args &rest body)
-  (let (forward-args
-        strip-keys
-        (strip-object-name (intern (concat (symbol-name object) "-strip")))
-        keys
-        (docstring (pop body)))
+  (let ((strip-object-name (intern (concat (symbol-name object) "-strip")))
+        (docstring (pop body))
+        forward-args strip-keys keys)
     (while (keywordp (car body))
       (setq keyword (pop body))
       (cond
@@ -171,9 +169,10 @@ range, dispatch to `vimpulse-surround-delete'.
 Otherwise, dispatch to `vimpulse-delete'."
   (interactive)
   (let (*vimpulse-surrounding*)
-    (when (not beg) (let ((range (vimpulse-range)))
-                      (setq beg (car range)
-                            end (cadr range))))
+    (unless beg
+      (let ((range (vimpulse-range)))
+        (setq beg (car range)
+              end (cadr range))))
     (if *vimpulse-surrounding*
         (vimpulse-surround-delete beg end (eq *vimpulse-surrounding* 'strip))
       (vimpulse-delete beg end dont-save))))
@@ -185,9 +184,10 @@ range, dispatch to `vimpulse-surround-change'.
 Otherwise, dispatch to `vimpulse-change'."
   (interactive)
   (let (*vimpulse-surrounding*)
-    (when (not beg) (let ((range (vimpulse-range)))
-                      (setq beg (car range)
-                            end (cadr range))))
+    (unless beg
+      (let ((range (vimpulse-range)))
+        (setq beg (car range)
+              end (cadr range))))
     (if *vimpulse-surrounding*
         (vimpulse-surround-change beg end (eq *vimpulse-surrounding* 'strip))
       (vimpulse-change beg end dont-save))))
@@ -199,9 +199,9 @@ Otherwise, dispatch to `vimpulse-change'."
   (vimpulse-paren-range arg ?\( nil t))
 
 (vimpulse-surround-define-text-object vimpulse-surround-bracket (arg)
-  "Select surrounding brackets."
   :keys '("]")
   :strip-keys '("[")
+  "Select surrounding square brackets."
   (vimpulse-paren-range arg ?\[ nil t))
 
 (vimpulse-surround-define-text-object vimpulse-surround-brace (arg)
@@ -211,9 +211,9 @@ Otherwise, dispatch to `vimpulse-change'."
   (vimpulse-paren-range arg ?\{ nil t))
 
 (vimpulse-surround-define-text-object vimpulse-surround-angle (arg)
-  "Select surrounding curly braces."
   :keys '(">")
   :strip-keys '("<")
+  "Select surrounding angle brackets."
   (vimpulse-paren-range arg ?< nil t))
 
 (vimpulse-surround-define-text-object vimpulse-surround-single-quote (arg)
