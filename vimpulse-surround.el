@@ -5,7 +5,7 @@
 ;; Author: Tim Harper <timcharper at gmail dat com>
 ;;      Please send bug reports to the mailing list (see below).
 ;; Created: July 23 2010
-;; Time-stamp: "2010-08-18 22:41:28 CEST stepnem"
+;; Time-stamp: "2010-08-19 18:27:50 CEST stepnem"
 ;; Version: 0.1+git
 ;; Keywords: emulations, vimpulse
 ;; Human-Keywords: vim, visual-mode, surround.vim
@@ -191,6 +191,9 @@ Otherwise, dispatch to `vimpulse-change'."
     (if *vimpulse-surrounding*
         (vimpulse-surround-change beg end (eq *vimpulse-surrounding* 'strip))
       (vimpulse-change beg end dont-save))))
+
+(add-to-list 'vimpulse-newline-cmds 'vimpulse-change-surround-or-change)
+(add-to-list 'vimpulse-newline-cmds 'vimpulse-delete-surround-or-delete)
 
 (vimpulse-surround-define-text-object vimpulse-surround-paren (arg)
   "Select surrounding parentheses."
