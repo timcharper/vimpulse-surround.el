@@ -80,17 +80,37 @@ It triggers `vimpulse-change'. Nothing to see here, move along.")
          (rest (match-string 2 input)))
     (cons (format "<%s%s>" tag rest) (format "</%s>" tag))))
 
-(defun vimpulse-surround-region (start end)
+(defun vimpulse-Surround-region (beg end)
   "Surround selection with input."
   (interactive "r")
-  (let (pair)
-    (setq pair (vimpulse-surround-char-to-pair
-                (format "%c" (viper-read-char-exclusive))))
-    (goto-char end)
-    (insert (cdr pair))
-    (goto-char start)
+  (let ((pair (vimpulse-surround-char-to-pair
+               (format "%c" (viper-read-char-exclusive))))
+        (o (make-overlay beg end)))
+    (goto-char (overlay-start o))
     (insert (car pair))
-    (goto-char start)))
+    (indent-according-to-mode)
+    (newline-and-indent)
+    (goto-char (overlay-end o))
+    (newline)
+    (insert (cdr pair))
+    (indent-according-to-mode)
+    (goto-char (overlay-start o))
+    (delete-overlay o)))
+
+(defun vimpulse-surround-region (beg end)
+  "Surround selection with input."
+  (interactive "r")
+  (if (equal vimpulse-visual-mode 'line)
+      (vimpulse-Surround-region beg end)
+    (let ((pair (vimpulse-surround-char-to-pair
+                 (format "%c" (viper-read-char-exclusive))))
+          (o (make-overlay beg end)))
+      (goto-char (overlay-start o))
+      (insert (car pair))
+      (goto-char (overlay-end o))
+      (insert (cdr pair))
+      (goto-char (overlay-start o))
+      (delete-overlay o))))
 
 (defun vimpulse-surround-prepend-key-prefix (keys)
   (mapcar (lambda (key) (concat "s" key)) keys))
@@ -192,6 +212,7 @@ Otherwise, dispatch to `vimpulse-change'."
 (define-key viper-vi-basic-map "c" 'vimpulse-change-surround-or-change)
 
 (define-key vimpulse-visual-basic-map "s" 'vimpulse-surround-region)
+(define-key vimpulse-visual-basic-map "S" 'vimpulse-Surround-region)
 
 (vimpulse-surround-define-text-object vimpulse-surround-paren (arg)
   "Select surrounding parentheses."
