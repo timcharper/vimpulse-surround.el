@@ -120,10 +120,11 @@ It triggers `vimpulse-change'. Nothing to see here, move along.")
 (defun vimpulse-surround-prepend-key-prefix (keys)
   (mapcar (lambda (key) (concat "s" key)) keys))
 
-(defmacro vimpulse-surround-define-text-object (object args &rest body)
+(defmacro vimpulse-surround-define-text-object (object args docstring &rest body)
   (let ((strip-object-name (intern (concat (symbol-name object) "-strip")))
-        (docstring (pop body))
         forward-args strip-keys keys)
+    (unless (stringp docstring)
+      (throw 'exception (format "Invalid docstring: %S" docstring)))
     (while (keywordp (car body))
       (setq keyword (pop body))
       (cond
