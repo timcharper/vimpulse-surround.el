@@ -228,9 +228,9 @@ Otherwise, dispatch to `vimpulse-change'."
   (vimpulse-paren-range arg ?\( nil t))
 
 (vimpulse-surround-define-text-object vimpulse-surround-bracket (arg)
+  "Select surrounding square brackets."
   :keys '("]")
   :strip-keys '("[")
-  "Select surrounding square brackets."
   (vimpulse-paren-range arg ?\[ nil t))
 
 (vimpulse-surround-define-text-object vimpulse-surround-brace (arg)
@@ -240,9 +240,9 @@ Otherwise, dispatch to `vimpulse-change'."
   (vimpulse-paren-range arg ?\{ nil t))
 
 (vimpulse-surround-define-text-object vimpulse-surround-angle (arg)
+  "Select surrounding angle brackets."
   :keys '(">")
   :strip-keys '("<")
-  "Select surrounding angle brackets."
   (vimpulse-paren-range arg ?< nil t))
 
 (vimpulse-surround-define-text-object vimpulse-surround-single-quote (arg)
