@@ -235,7 +235,7 @@ Otherwise, dispatch to `vimpulse-change'."
 
 (vimpulse-surround-define-text-object vimpulse-surround-brace (arg)
   "Select surrounding curly braces."
-  :keys '("}")
+  :keys '("B" "}")
   :strip-keys '("{")
   (vimpulse-paren-range arg ?\{ nil t))
 
