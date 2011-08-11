@@ -50,7 +50,8 @@
     ("{" . ("{ " . " }"))
     ("#" . ("#{" . "}"))
     ("t" . vimpulse-surround-read-tag)
-    ("<" . vimpulse-surround-read-tag))
+    ("<" . vimpulse-surround-read-tag)
+    (">" . ("<" . ">")))
   "Alist of surround items.
 Each item is of the form (TRIGGER . (LEFT . RIGHT)), all strings.
 Alternatively, a function can be put in place of (LEFT . RIGHT).
