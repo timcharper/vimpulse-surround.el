@@ -81,7 +81,7 @@ It triggers `vimpulse-change'. Nothing to see here, move along.")
 
 (defun vimpulse-surround-read-tag ()
   (let* ((input (read-from-minibuffer "<" "" vimpulse-surround-read-tag-keymap))
-         (_ (string-match "\\([a-z-]+\\)\\(.*?\\)[>]*$" input))
+         (_ (string-match "\\([a-z0-9-]+\\)\\(.*?\\)[>]*$" input))
          (tag  (match-string 1 input))
          (rest (match-string 2 input)))
     (cons (format "<%s%s>" tag rest) (format "</%s>" tag))))
